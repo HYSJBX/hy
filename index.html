@@ -126,6 +126,12 @@
   }
   .download-btn:active { transform: translateY(0); }
 
+  /* 占位状态（链接仍为 # 时）的视觉提示 */
+  .download-btn.placeholder {
+    background: linear-gradient(135deg, #9aa0b4, #7c8399);
+    box-shadow: 0 8px 20px rgba(124, 131, 153, .25);
+  }
+
   .hint {
     text-align: center;
     color: #a8adbd;
@@ -165,95 +171,102 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ==================== 数据（44 条） ==================== */
+/* ============================================================
+   数据区
+   ------------------------------------------------------------
+   每条资源的 downloadUrl 就是该内容页「下载资源」按钮的链接。
+   目前全部填的是 '#'，你只需要把对应那条的 '#' 换成真实地址即可，
+   例如：
+     downloadUrl: 'https://example.com/files/前端工具包.zip'
+   ============================================================ */
 const data = [
-  { id: 1,  title: '前端开发工具包 v3.2 完整版',
+  { id: 1,  downloadUrl: '#', title: '前端开发工具包 v3.2 完整版',
     desc: '集成常用脚手架、组件模板与构建脚本，同时支持 Vue 与 React 两套方案。内含详细使用文档与示例工程，适合团队快速搭建中后台项目。' },
-  { id: 2,  title: '高清壁纸合集（200 张）',
+  { id: 2,  downloadUrl: '#', title: '高清壁纸合集（200 张）',
     desc: '精选 4K 分辨率桌面与手机壁纸共 200 张，涵盖风景、极简、插画、暗色四类风格。所有图片均已按设备比例裁切，下载后可直接使用。' },
-  { id: 3,  title: 'Python 数据分析入门教程',
+  { id: 3,  downloadUrl: '#', title: 'Python 数据分析入门教程',
     desc: '从零讲解 NumPy、Pandas 与 Matplotlib 的核心用法，配套 12 个实战案例与完整数据集。适合没有编程基础但想快速上手数据分析的读者。' },
-  { id: 4,  title: '手机摄影后期调色预设包',
+  { id: 4,  downloadUrl: '#', title: '手机摄影后期调色预设包',
     desc: '包含 60 款通用调色预设，覆盖日系、胶片、暗调、人像等常见风格。提供移动端与桌面端两种格式，导入后一键套用即可。' },
-  { id: 5,  title: '办公表格模板 500 套',
+  { id: 5,  downloadUrl: '#', title: '办公表格模板 500 套',
     desc: '汇总财务、人事、行政、销售等场景的 Excel 模板共 500 套，全部公式已设好，打开即可填写。附带使用说明与常见问题解答。' },
-  { id: 6,  title: '经典电影原声音乐合集',
+  { id: 6,  downloadUrl: '#', title: '经典电影原声音乐合集',
     desc: '收录近百部经典电影的原声配乐，MP3 高码率格式，文件均已整理好曲名与专辑信息。适合工作、阅读时作为背景音乐使用。' },
-  { id: 7,  title: 'UI 设计图标库（3000+ 矢量图标）',
+  { id: 7,  downloadUrl: '#', title: 'UI 设计图标库（3000+ 矢量图标）',
     desc: '提供 3000 余枚线性与面性风格图标，支持 SVG、PNG、字体图标三种格式。命名规范统一，可直接拖入设计软件使用。' },
-  { id: 8,  title: '英语四六级真题解析资料',
+  { id: 8,  downloadUrl: '#', title: '英语四六级真题解析资料',
     desc: '整理近十年四六级考试真题及逐题解析，含听力原文、高频词汇表与作文范文。PDF 排版清晰，方便打印练习。' },
-  { id: 9,  title: '短视频剪辑素材包',
+  { id: 9,  downloadUrl: '#', title: '短视频剪辑素材包',
     desc: '内含转场动画、字幕条、音效、背景音乐等常用素材共 800 余个文件。全部为无水印格式，适用于主流剪辑软件。' },
-  { id: 10, title: '个人简历模板（可编辑）',
+  { id: 10, downloadUrl: '#', title: '个人简历模板（可编辑）',
     desc: '提供 30 套不同风格的中英文简历模板，Word 与 PSD 双格式，均可自由修改配色与排版。附赠简历撰写要点与投递建议。' },
-  { id: 11, title: '网页响应式布局实战源码',
+  { id: 11, downloadUrl: '#', title: '网页响应式布局实战源码',
     desc: '通过 8 个完整页面案例讲解 Flex、Grid 与媒体查询的实际应用。源码注释详尽，适合边看边练，巩固布局基础。' },
-  { id: 12, title: '人工智能入门电子书',
+  { id: 12, downloadUrl: '#', title: '人工智能入门电子书',
     desc: '用通俗语言介绍机器学习、神经网络与常见算法的基本原理，几乎不涉及复杂公式。适合作为跨专业入门的科普读物。' },
-  { id: 13, title: '摄影构图技巧手册',
+  { id: 13, downloadUrl: '#', title: '摄影构图技巧手册',
     desc: '系统讲解三分法、引导线、对称、留白等 15 种常用构图方式，配大量对比示例图。PDF 共 120 页，手机端阅读排版已优化。' },
-  { id: 14, title: '安卓应用去广告工具',
+  { id: 14, downloadUrl: '#', title: '安卓应用去广告工具',
     desc: '提供多种安卓端广告拦截方案与配置说明，支持免 root 使用。使用前请仔细阅读说明文档，并注意相关风险。' },
-  { id: 15, title: '高效记忆法音频课程',
+  { id: 15, downloadUrl: '#', title: '高效记忆法音频课程',
     desc: '共 20 节音频课，讲解联想记忆、记忆宫殿等实用方法，每节 15 分钟左右。适合通勤或睡前收听。' },
-  { id: 16, title: '电商运营数据看板模板',
+  { id: 16, downloadUrl: '#', title: '电商运营数据看板模板',
     desc: '覆盖流量、转化、客单价、复购等核心指标的可视化看板，Excel 与在线表格双版本。填入原始数据即可自动生成图表。' },
-  { id: 17, title: '字体设计素材合集',
+  { id: 17, downloadUrl: '#', title: '字体设计素材合集',
     desc: '收录 200 余款可商用中英文字体，含标题、正文、手写三大类。附字体预览图与安装教程，方便快速筛选。' },
-  { id: 18, title: '3D 模型素材库精选',
+  { id: 18, downloadUrl: '#', title: '3D 模型素材库精选',
     desc: '包含家具、建筑、植物、小物件等常见场景模型共 150 个，格式为通用 OBJ 与 FBX。面数已优化，可直接用于渲染或游戏项目。' },
-  { id: 19, title: '吉他入门指法教学视频',
+  { id: 19, downloadUrl: '#', title: '吉他入门指法教学视频',
     desc: '从持琴姿势、和弦按法到简单弹唱，共 30 集视频循序渐进。每集末尾附练习曲目与常见错误纠正。' },
-  { id: 20, title: 'PPT 动画效果模板',
+  { id: 20, downloadUrl: '#', title: 'PPT 动画效果模板',
     desc: '提供 80 组可直接套用的动画组合，含开场、过渡、数据展示等场景。支持一键替换文字与图片，无需手动调整时间轴。' },
-  { id: 21, title: '个人记账 Excel 工具',
+  { id: 21, downloadUrl: '#', title: '个人记账 Excel 工具',
     desc: '自动统计收支、生成月度报表与分类饼图的记账表格，支持多账户管理。只需每日填写流水，其余计算全部自动完成。' },
-  { id: 22, title: '编程面试题库整理',
+  { id: 22, downloadUrl: '#', title: '编程面试题库整理',
     desc: '汇总数据结构、算法、操作系统、网络等方向的常见面试题及参考解答。题目按难度分级，附知识点索引便于复习。' },
-  { id: 23, title: '有声小说全集（完结）',
+  { id: 23, downloadUrl: '#', title: '有声小说全集（完结）',
     desc: '长篇有声小说完整版，共 320 集，MP3 格式，音质清晰无杂音。文件按章节顺序编号，支持批量导入播放器。' },
-  { id: 24, title: '手机端 UI 组件库',
+  { id: 24, downloadUrl: '#', title: '手机端 UI 组件库',
     desc: '包含按钮、表单、卡片、导航等 60 余个移动端常用组件，Sketch 与 Figma 双格式。组件均已做响应式适配，可直接复用。' },
-  { id: 25, title: '建筑设计 CAD 图块集',
+  { id: 25, downloadUrl: '#', title: '建筑设计 CAD 图块集',
     desc: '收录家具、洁具、门窗、植物等常用 CAD 图块共 2000 余个。图层与线型规范统一，适用于平面图与施工图绘制。' },
-  { id: 26, title: '旅行攻略地图合集',
+  { id: 26, downloadUrl: '#', title: '旅行攻略地图合集',
     desc: '整理 30 个热门旅行目的地的手绘地图与路线攻略，标注交通、住宿与美食信息。支持手机离线查看，出行更方便。' },
-  { id: 27, title: '健身训练计划表',
+  { id: 27, downloadUrl: '#', title: '健身训练计划表',
     desc: '按增肌、减脂、塑形三个目标分别制定 12 周训练计划，含动作图解与组数建议。附饮食参考表与训练打卡模板。' },
-  { id: 28, title: '图片批量压缩工具',
+  { id: 28, downloadUrl: '#', title: '图片批量压缩工具',
     desc: '支持批量压缩、格式转换与尺寸调整，压缩后可保持较好的画质。绿色版免安装，解压即可运行。' },
-  { id: 29, title: '日语五十音学习卡',
+  { id: 29, downloadUrl: '#', title: '日语五十音学习卡',
     desc: '包含平假名、片假名、罗马音与书写笔顺的电子学习卡，共 100 余张。可打印成卡片随身携带，附发音音频。' },
-  { id: 30, title: '视频转码工具绿色版',
+  { id: 30, downloadUrl: '#', title: '视频转码工具绿色版',
     desc: '支持常见视频格式互转、分辨率调整与字幕嵌入，内置多种预设方案。界面简洁，无需复杂参数设置即可上手。' },
-  { id: 31, title: '手绘插画笔刷包',
+  { id: 31, downloadUrl: '#', title: '手绘插画笔刷包',
     desc: '内含铅笔、水彩、马克笔、噪点等 50 款笔刷，兼容主流绘图软件。每款笔刷均附效果示例图，方便按需选用。' },
-  { id: 32, title: '网站模板 HTML5 响应式',
+  { id: 32, downloadUrl: '#', title: '网站模板 HTML5 响应式',
     desc: '提供企业官网、个人主页、产品落地页等 12 套完整模板，纯 HTML + CSS 编写，无第三方依赖。结构清晰，便于二次修改。' },
-  { id: 33, title: '古典音乐无损合集',
+  { id: 33, downloadUrl: '#', title: '古典音乐无损合集',
     desc: '收录巴赫、莫扎特、贝多芬等作曲家的经典作品，无损音质，曲目信息完整。文件夹按作曲家分类，方便检索。' },
-  { id: 34, title: '自媒体文案写作指南',
+  { id: 34, downloadUrl: '#', title: '自媒体文案写作指南',
     desc: '讲解标题撰写、开头设计、结构搭建与结尾引导的实用方法，附 50 个常见选题模板。适合公众号与短视频文案参考。' },
-  { id: 35, title: '数据可视化图表模板',
+  { id: 35, downloadUrl: '#', title: '数据可视化图表模板',
     desc: '包含折线、柱状、饼图、桑基图等 40 种图表模板，支持 Excel 与在线工具两种制作方式。配色方案经过优化，直接套用即可。' },
-  { id: 36, title: '儿童绘本电子版合集',
+  { id: 36, downloadUrl: '#', title: '儿童绘本电子版合集',
     desc: '精选 60 本经典儿童绘本 PDF，画质清晰，适合亲子共读。已按年龄段分类整理，方便挑选。' },
-  { id: 37, title: '键盘快捷键速查手册',
+  { id: 37, downloadUrl: '#', title: '键盘快捷键速查手册',
     desc: '汇总 Windows、macOS 与常用办公、设计软件的快捷键，共 20 张速查表。可打印贴在桌面，逐步养成高效操作习惯。' },
-  { id: 38, title: '无损音乐转换工具',
+  { id: 38, downloadUrl: '#', title: '无损音乐转换工具',
     desc: '支持多种音频格式互转与码率调整，转换过程保持原始音质。附带批量处理与标签编辑功能。' },
-  { id: 39, title: '产品原型设计源文件',
+  { id: 39, downloadUrl: '#', title: '产品原型设计源文件',
     desc: '包含移动端与 Web 端常见页面原型共 80 个，Axure 与 Figma 双格式。组件规范统一，可直接用于需求评审。' },
-  { id: 40, title: '中考复习资料包',
+  { id: 40, downloadUrl: '#', title: '中考复习资料包',
     desc: '整理语数英物化五科的复习提纲、易错题与模拟卷，按知识点分册。PDF 排版便于打印，适合考前系统梳理。' },
-  { id: 41, title: '动态手机壁纸合集',
+  { id: 41, downloadUrl: '#', title: '动态手机壁纸合集',
     desc: '提供 80 款动态壁纸，涵盖粒子、流体、时钟、天气等类型。附设置教程，支持主流安卓机型。' },
-  { id: 42, title: '电脑系统优化工具集',
+  { id: 42, downloadUrl: '#', title: '电脑系统优化工具集',
     desc: '集合启动项管理、垃圾清理、驱动检测等常用小工具，均为绿色版。使用前建议先创建系统还原点。' },
-  { id: 43, title: '摄影后期调色教程',
+  { id: 43, downloadUrl: '#', title: '摄影后期调色教程',
     desc: '从曲线、色彩平衡到 Camera Raw 完整流程，共 25 节视频课。附练习素材，可跟着案例一步步操作。' },
-  { id: 44, title: '通用合同范本大全',
+  { id: 44, downloadUrl: '#', title: '通用合同范本大全',
     desc: '收录劳动合同、租赁合同、合作协议等常用范本共 120 份，Word 格式可编辑。使用前请根据实际情况调整条款。' }
 ];
 
@@ -283,6 +296,8 @@ function listView() {
 }
 
 function detailView(item) {
+  // 链接仍为 '#' 时加上占位样式；替换成真实地址后自动恢复正常样式
+  const isPlaceholder = !item.downloadUrl || item.downloadUrl === '#';
   return `
     <div class="wrap">
       <a class="back" href="#/">← 返回列表</a>
@@ -290,8 +305,10 @@ function detailView(item) {
         <h1 class="detail-title">${item.title}</h1>
         <div class="divider"></div>
         <p class="detail-desc">${item.desc}</p>
-        <a class="download-btn" href="#">下载资源</a>
-        <p class="hint">下载链接为占位符（#）</p>
+        <a class="download-btn ${isPlaceholder ? 'placeholder' : ''}"
+           href="${item.downloadUrl}"
+           ${isPlaceholder ? '' : 'target="_blank" rel="noopener"'}>下载资源</a>
+        <p class="hint">${isPlaceholder ? '下载链接为占位符（#）' : '点击按钮开始下载'}</p>
       </article>
     </div>`;
 }
@@ -320,7 +337,8 @@ function route() {
 window.addEventListener('hashchange', route);
 route();
 
-/* ==================== 下载按钮：阻止 # 跳转 ==================== */
+/* ==================== 下载按钮点击处理 ====================
+   链接为 '#' 时拦截并提示；替换成真实链接后正常跳转，不再拦截。 */
 let toastTimer = null;
 function showToast(msg) {
   toastEl.textContent = msg;
@@ -331,7 +349,10 @@ function showToast(msg) {
 
 document.addEventListener('click', e => {
   const btn = e.target.closest('.download-btn');
-  if (btn) {
+  if (!btn) return;
+
+  const href = btn.getAttribute('href');
+  if (!href || href === '#') {
     e.preventDefault();
     showToast('下载链接为占位符，暂不可用');
   }
