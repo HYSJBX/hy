@@ -272,7 +272,7 @@ function listView() {
   return `
     <div class="wrap">
       <header class="site-header">
-        <h1>资源列表</h1>
+        <h1>小初高学习资料列表</h1>
         <p class="sub">共 ${data.length} 条资源 · 点击标题查看详情</p>
       </header>
       <ul class="list">
@@ -320,7 +320,7 @@ function route() {
     }
   } else {
     app.innerHTML = listView();
-    document.title = '资源列表';
+    document.title = '小初高学习资料列表';
   }
   window.scrollTo(0, 0);
 }
