@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>资源列表</title>
+<title>小初高学习资料列表</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -299,7 +299,7 @@ function detailView(item) {
         <p class="detail-desc">${item.desc}</p>
         <a class="download-btn" href="${item.downloadUrl}"
            ${item.downloadUrl && item.downloadUrl !== '#' ? 'target="_blank" rel="noopener"' : ''}>下载资源</a>
-        <p class="hint">下载链接为占位符（#）</p>
+        <p class="hint">点击下载资源下载源文件</p>
       </article>
     </div>`;
 }
