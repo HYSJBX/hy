@@ -3,289 +3,339 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>资源下载列表</title>
+<title>资源列表</title>
 <style>
-  :root{
-    --bg:#f4f6fb;
-    --card:#ffffff;
-    --text:#1f2430;
-    --muted:#8b93a7;
-    --line:#eef0f6;
-    --primary:#3b6ef6;
-    --primary-dark:#2a55d0;
-    --radius:16px;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f6fa;
+    color: #1f2430;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
-  *{box-sizing:border-box;margin:0;padding:0;}
-
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
-                "Hiragino Sans GB","Microsoft YaHei",sans-serif;
-    background:
-      radial-gradient(1000px 500px at 10% -10%, #e5ecff 0%, transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, #eaf7ff 0%, transparent 55%),
-      var(--bg);
-    color:var(--text);
-    min-height:100vh;
-    padding:40px 16px 72px;
-    -webkit-font-smoothing:antialiased;
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
   }
 
-  .wrap{
-    max-width:880px;
-    margin:0 auto;
+  /* ============ 列表页 ============ */
+  .site-header { text-align: center; margin-bottom: 28px; }
+  .site-header h1 { font-size: 26px; letter-spacing: 1px; }
+  .site-header .sub { color: #8a90a2; font-size: 13px; margin-top: 8px; }
+
+  .list {
+    list-style: none;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(20, 25, 50, .06);
+  }
+  .list li + li { border-top: 1px solid #f0f1f5; }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 18px;
+    text-decoration: none;
+    color: inherit;
+    transition: background .18s ease, padding-left .18s ease;
+  }
+  .item:hover { background: #f7f8ff; padding-left: 24px; }
+
+  .idx {
+    font: 600 12px/1 ui-monospace, Menlo, Consolas, monospace;
+    color: #9aa0b4;
+    min-width: 24px;
+    transition: color .18s;
+  }
+  .item:hover .idx { color: #4f46e5; }
+
+  .item-title { flex: 1; font-size: 15px; }
+
+  .chev {
+    color: #c6cad8;
+    font-size: 20px;
+    transition: transform .18s, color .18s;
+  }
+  .item:hover .chev { color: #4f46e5; transform: translateX(3px); }
+
+  .site-footer {
+    text-align: center;
+    color: #b0b5c5;
+    font-size: 12px;
+    margin-top: 26px;
   }
 
-  /* ===== 头部 ===== */
-  .head{
-    margin-bottom:22px;
-    padding:0 4px;
+  /* ============ 内容页 ============ */
+  .back {
+    display: inline-block;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 18px;
+    transition: color .18s;
   }
-  .head h1{
-    font-size:24px;
-    font-weight:700;
-    letter-spacing:.5px;
+  .back:hover { color: #4f46e5; }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 6px 28px rgba(20, 25, 50, .07);
+    animation: fade .25s ease;
   }
-  .head .sub{
-    margin-top:8px;
-    font-size:13.5px;
-    color:var(--muted);
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .tag{
-    display:inline-block;
-    padding:2px 10px;
-    font-size:12px;
-    color:var(--primary);
-    background:rgba(59,110,246,.09);
-    border-radius:999px;
-    font-weight:600;
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ===== 列表卡片 ===== */
-  .card{
-    background:var(--card);
-    border-radius:var(--radius);
-    box-shadow:
-      0 1px 2px rgba(24,39,75,.04),
-      0 12px 32px -12px rgba(24,39,75,.14);
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,.7);
+  .detail-title { font-size: 22px; line-height: 1.5; }
+
+  .divider { height: 1px; background: #eef0f6; margin: 20px 0; }
+
+  .detail-desc {
+    color: #4b5162;
+    font-size: 15px;
+    line-height: 1.9;
   }
 
-  .list{
-    list-style:none;
-    counter-reset:idx;
+  .download-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #5b5bd6, #4f46e5);
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, .28);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(79, 70, 229, .34);
+  }
+  .download-btn:active { transform: translateY(0); }
+
+  .hint {
+    text-align: center;
+    color: #a8adbd;
+    font-size: 12px;
+    margin-top: 12px;
   }
 
-  .item{
-    counter-increment:idx;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:15px 20px;
-    border-bottom:1px solid var(--line);
-    transition:background .18s ease;
+  /* ============ 轻提示 ============ */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 44px;
+    transform: translate(-50%, 16px);
+    background: rgba(30, 34, 48, .92);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 99;
   }
-  .item:last-child{border-bottom:none;}
-  .item:hover{background:#f8faff;}
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-  /* 序号 */
-  .idx{
-    flex:0 0 auto;
-    width:34px;
-    font-size:12.5px;
-    font-weight:600;
-    font-variant-numeric:tabular-nums;
-    color:#b3bacb;
-    letter-spacing:.5px;
-    user-select:none;
-  }
-  .idx::before{
-    content:counter(idx, decimal-leading-zero);
-  }
-  .item:hover .idx{color:var(--primary);}
-
-  /* 标题 */
-  .title{
-    flex:1 1 auto;
-    min-width:0;
-    font-size:15px;
-    line-height:1.5;
-    color:var(--text);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  /* 下载按钮 */
-  .btn{
-    flex:0 0 auto;
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:7px 14px;
-    font-size:13px;
-    font-weight:600;
-    color:#fff;
-    text-decoration:none;
-    background:linear-gradient(180deg,#4a7bff,#3b6ef6);
-    border-radius:999px;
-    box-shadow:0 4px 10px -3px rgba(59,110,246,.55);
-    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-  }
-  .btn svg{
-    width:14px;height:14px;
-    stroke:currentColor;
-    stroke-width:2.2;
-    fill:none;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-  }
-  .btn:hover{
-    background:linear-gradient(180deg,#3b6ef6,#2a55d0);
-    transform:translateY(-1px);
-    box-shadow:0 8px 18px -6px rgba(59,110,246,.7);
-  }
-  .btn:active{transform:translateY(0) scale(.97);}
-  .btn:focus-visible{
-    outline:2px solid #9dbaff;
-    outline-offset:2px;
-  }
-
-  /* 页脚 */
-  .foot{
-    margin-top:22px;
-    text-align:center;
-    font-size:12.5px;
-    color:var(--muted);
-  }
-
-  /* ===== 移动端 ===== */
-  @media (max-width:560px){
-    body{padding:24px 12px 56px;}
-    .head h1{font-size:20px;}
-    .item{gap:10px;padding:13px 14px;}
-    .idx{width:26px;font-size:11px;}
-    .title{font-size:14px;}
-    .btn{padding:6px 11px;font-size:12px;}
-    .btn .txt{display:none;}      /* 小屏幕只显示图标，避免挤压标题 */
-    .btn svg{width:16px;height:16px;}
+  @media (max-width: 480px) {
+    .wrap { padding: 26px 14px 60px; }
+    .site-header h1 { font-size: 22px; }
+    .card { padding: 24px 18px; }
+    .detail-title { font-size: 19px; }
   }
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div id="app"></div>
+<div class="toast" id="toast"></div>
 
-  <div class="head">
-    <h1>资源下载列表</h1>
-    <div class="sub">
-      <span class="tag">共 44 条</span>
-      <span>点击右侧按钮即可下载对应文件</span>
-    </div>
-  </div>
+<script>
+/* ==================== 数据（44 条） ==================== */
+const data = [
+  { id: 1,  title: '前端开发工具包 v3.2 完整版',
+    desc: '集成常用脚手架、组件模板与构建脚本，同时支持 Vue 与 React 两套方案。内含详细使用文档与示例工程，适合团队快速搭建中后台项目。' },
+  { id: 2,  title: '高清壁纸合集（200 张）',
+    desc: '精选 4K 分辨率桌面与手机壁纸共 200 张，涵盖风景、极简、插画、暗色四类风格。所有图片均已按设备比例裁切，下载后可直接使用。' },
+  { id: 3,  title: 'Python 数据分析入门教程',
+    desc: '从零讲解 NumPy、Pandas 与 Matplotlib 的核心用法，配套 12 个实战案例与完整数据集。适合没有编程基础但想快速上手数据分析的读者。' },
+  { id: 4,  title: '手机摄影后期调色预设包',
+    desc: '包含 60 款通用调色预设，覆盖日系、胶片、暗调、人像等常见风格。提供移动端与桌面端两种格式，导入后一键套用即可。' },
+  { id: 5,  title: '办公表格模板 500 套',
+    desc: '汇总财务、人事、行政、销售等场景的 Excel 模板共 500 套，全部公式已设好，打开即可填写。附带使用说明与常见问题解答。' },
+  { id: 6,  title: '经典电影原声音乐合集',
+    desc: '收录近百部经典电影的原声配乐，MP3 高码率格式，文件均已整理好曲名与专辑信息。适合工作、阅读时作为背景音乐使用。' },
+  { id: 7,  title: 'UI 设计图标库（3000+ 矢量图标）',
+    desc: '提供 3000 余枚线性与面性风格图标，支持 SVG、PNG、字体图标三种格式。命名规范统一，可直接拖入设计软件使用。' },
+  { id: 8,  title: '英语四六级真题解析资料',
+    desc: '整理近十年四六级考试真题及逐题解析，含听力原文、高频词汇表与作文范文。PDF 排版清晰，方便打印练习。' },
+  { id: 9,  title: '短视频剪辑素材包',
+    desc: '内含转场动画、字幕条、音效、背景音乐等常用素材共 800 余个文件。全部为无水印格式，适用于主流剪辑软件。' },
+  { id: 10, title: '个人简历模板（可编辑）',
+    desc: '提供 30 套不同风格的中英文简历模板，Word 与 PSD 双格式，均可自由修改配色与排版。附赠简历撰写要点与投递建议。' },
+  { id: 11, title: '网页响应式布局实战源码',
+    desc: '通过 8 个完整页面案例讲解 Flex、Grid 与媒体查询的实际应用。源码注释详尽，适合边看边练，巩固布局基础。' },
+  { id: 12, title: '人工智能入门电子书',
+    desc: '用通俗语言介绍机器学习、神经网络与常见算法的基本原理，几乎不涉及复杂公式。适合作为跨专业入门的科普读物。' },
+  { id: 13, title: '摄影构图技巧手册',
+    desc: '系统讲解三分法、引导线、对称、留白等 15 种常用构图方式，配大量对比示例图。PDF 共 120 页，手机端阅读排版已优化。' },
+  { id: 14, title: '安卓应用去广告工具',
+    desc: '提供多种安卓端广告拦截方案与配置说明，支持免 root 使用。使用前请仔细阅读说明文档，并注意相关风险。' },
+  { id: 15, title: '高效记忆法音频课程',
+    desc: '共 20 节音频课，讲解联想记忆、记忆宫殿等实用方法，每节 15 分钟左右。适合通勤或睡前收听。' },
+  { id: 16, title: '电商运营数据看板模板',
+    desc: '覆盖流量、转化、客单价、复购等核心指标的可视化看板，Excel 与在线表格双版本。填入原始数据即可自动生成图表。' },
+  { id: 17, title: '字体设计素材合集',
+    desc: '收录 200 余款可商用中英文字体，含标题、正文、手写三大类。附字体预览图与安装教程，方便快速筛选。' },
+  { id: 18, title: '3D 模型素材库精选',
+    desc: '包含家具、建筑、植物、小物件等常见场景模型共 150 个，格式为通用 OBJ 与 FBX。面数已优化，可直接用于渲染或游戏项目。' },
+  { id: 19, title: '吉他入门指法教学视频',
+    desc: '从持琴姿势、和弦按法到简单弹唱，共 30 集视频循序渐进。每集末尾附练习曲目与常见错误纠正。' },
+  { id: 20, title: 'PPT 动画效果模板',
+    desc: '提供 80 组可直接套用的动画组合，含开场、过渡、数据展示等场景。支持一键替换文字与图片，无需手动调整时间轴。' },
+  { id: 21, title: '个人记账 Excel 工具',
+    desc: '自动统计收支、生成月度报表与分类饼图的记账表格，支持多账户管理。只需每日填写流水，其余计算全部自动完成。' },
+  { id: 22, title: '编程面试题库整理',
+    desc: '汇总数据结构、算法、操作系统、网络等方向的常见面试题及参考解答。题目按难度分级，附知识点索引便于复习。' },
+  { id: 23, title: '有声小说全集（完结）',
+    desc: '长篇有声小说完整版，共 320 集，MP3 格式，音质清晰无杂音。文件按章节顺序编号，支持批量导入播放器。' },
+  { id: 24, title: '手机端 UI 组件库',
+    desc: '包含按钮、表单、卡片、导航等 60 余个移动端常用组件，Sketch 与 Figma 双格式。组件均已做响应式适配，可直接复用。' },
+  { id: 25, title: '建筑设计 CAD 图块集',
+    desc: '收录家具、洁具、门窗、植物等常用 CAD 图块共 2000 余个。图层与线型规范统一，适用于平面图与施工图绘制。' },
+  { id: 26, title: '旅行攻略地图合集',
+    desc: '整理 30 个热门旅行目的地的手绘地图与路线攻略，标注交通、住宿与美食信息。支持手机离线查看，出行更方便。' },
+  { id: 27, title: '健身训练计划表',
+    desc: '按增肌、减脂、塑形三个目标分别制定 12 周训练计划，含动作图解与组数建议。附饮食参考表与训练打卡模板。' },
+  { id: 28, title: '图片批量压缩工具',
+    desc: '支持批量压缩、格式转换与尺寸调整，压缩后可保持较好的画质。绿色版免安装，解压即可运行。' },
+  { id: 29, title: '日语五十音学习卡',
+    desc: '包含平假名、片假名、罗马音与书写笔顺的电子学习卡，共 100 余张。可打印成卡片随身携带，附发音音频。' },
+  { id: 30, title: '视频转码工具绿色版',
+    desc: '支持常见视频格式互转、分辨率调整与字幕嵌入，内置多种预设方案。界面简洁，无需复杂参数设置即可上手。' },
+  { id: 31, title: '手绘插画笔刷包',
+    desc: '内含铅笔、水彩、马克笔、噪点等 50 款笔刷，兼容主流绘图软件。每款笔刷均附效果示例图，方便按需选用。' },
+  { id: 32, title: '网站模板 HTML5 响应式',
+    desc: '提供企业官网、个人主页、产品落地页等 12 套完整模板，纯 HTML + CSS 编写，无第三方依赖。结构清晰，便于二次修改。' },
+  { id: 33, title: '古典音乐无损合集',
+    desc: '收录巴赫、莫扎特、贝多芬等作曲家的经典作品，无损音质，曲目信息完整。文件夹按作曲家分类，方便检索。' },
+  { id: 34, title: '自媒体文案写作指南',
+    desc: '讲解标题撰写、开头设计、结构搭建与结尾引导的实用方法，附 50 个常见选题模板。适合公众号与短视频文案参考。' },
+  { id: 35, title: '数据可视化图表模板',
+    desc: '包含折线、柱状、饼图、桑基图等 40 种图表模板，支持 Excel 与在线工具两种制作方式。配色方案经过优化，直接套用即可。' },
+  { id: 36, title: '儿童绘本电子版合集',
+    desc: '精选 60 本经典儿童绘本 PDF，画质清晰，适合亲子共读。已按年龄段分类整理，方便挑选。' },
+  { id: 37, title: '键盘快捷键速查手册',
+    desc: '汇总 Windows、macOS 与常用办公、设计软件的快捷键，共 20 张速查表。可打印贴在桌面，逐步养成高效操作习惯。' },
+  { id: 38, title: '无损音乐转换工具',
+    desc: '支持多种音频格式互转与码率调整，转换过程保持原始音质。附带批量处理与标签编辑功能。' },
+  { id: 39, title: '产品原型设计源文件',
+    desc: '包含移动端与 Web 端常见页面原型共 80 个，Axure 与 Figma 双格式。组件规范统一，可直接用于需求评审。' },
+  { id: 40, title: '中考复习资料包',
+    desc: '整理语数英物化五科的复习提纲、易错题与模拟卷，按知识点分册。PDF 排版便于打印，适合考前系统梳理。' },
+  { id: 41, title: '动态手机壁纸合集',
+    desc: '提供 80 款动态壁纸，涵盖粒子、流体、时钟、天气等类型。附设置教程，支持主流安卓机型。' },
+  { id: 42, title: '电脑系统优化工具集',
+    desc: '集合启动项管理、垃圾清理、驱动检测等常用小工具，均为绿色版。使用前建议先创建系统还原点。' },
+  { id: 43, title: '摄影后期调色教程',
+    desc: '从曲线、色彩平衡到 Camera Raw 完整流程，共 25 节视频课。附练习素材，可跟着案例一步步操作。' },
+  { id: 44, title: '通用合同范本大全',
+    desc: '收录劳动合同、租赁合同、合作协议等常用范本共 120 份，Word 格式可编辑。使用前请根据实际情况调整条款。' }
+];
 
-  <div class="card">
-    <ul class="list">
+/* ==================== 视图 ==================== */
+const app = document.getElementById('app');
+const toastEl = document.getElementById('toast');
 
-      <li class="item"><span class="idx"></span><span class="title">2024年度产品设计方案合集</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
+function listView() {
+  return `
+    <div class="wrap">
+      <header class="site-header">
+        <h1>资源列表</h1>
+        <p class="sub">共 ${data.length} 条资源 · 点击标题查看详情</p>
+      </header>
+      <ul class="list">
+        ${data.map((item, i) => `
+          <li>
+            <a class="item" href="#/item/${item.id}">
+              <span class="idx">${String(i + 1).padStart(2, '0')}</span>
+              <span class="item-title">${item.title}</span>
+              <span class="chev">›</span>
+            </a>
+          </li>`).join('')}
+      </ul>
+      <footer class="site-footer">— 已经到底啦 —</footer>
+    </div>`;
+}
 
-      <li class="item"><span class="idx"></span><span class="title">前端开发规范文档 v3.2</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
+function detailView(item) {
+  return `
+    <div class="wrap">
+      <a class="back" href="#/">← 返回列表</a>
+      <article class="card">
+        <h1 class="detail-title">${item.title}</h1>
+        <div class="divider"></div>
+        <p class="detail-desc">${item.desc}</p>
+        <a class="download-btn" href="#">下载资源</a>
+        <p class="hint">下载链接为占位符（#）</p>
+      </article>
+    </div>`;
+}
 
-      <li class="item"><span class="idx"></span><span class="title">用户行为数据分析报告</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
+/* ==================== 路由 ==================== */
+function route() {
+  const hash = location.hash || '#/';
+  const match = hash.match(/^#\/item\/(\d+)$/);
 
-      <li class="item"><span class="idx"></span><span class="title">移动端 UI 组件库源文件</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
+  if (match) {
+    const item = data.find(d => d.id === Number(match[1]));
+    if (item) {
+      app.innerHTML = detailView(item);
+      document.title = item.title;
+    } else {
+      location.hash = '#/';
+      return;
+    }
+  } else {
+    app.innerHTML = listView();
+    document.title = '资源列表';
+  }
+  window.scrollTo(0, 0);
+}
 
-      <li class="item"><span class="idx"></span><span class="title">品牌视觉识别系统手册</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
+window.addEventListener('hashchange', route);
+route();
 
-      <li class="item"><span class="idx"></span><span class="title">项目需求说明书模板</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
+/* ==================== 下载按钮：阻止 # 跳转 ==================== */
+let toastTimer = null;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1600);
+}
 
-      <li class="item"><span class="idx"></span><span class="title">服务器部署与运维指南</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">数据库设计规范与示例</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">产品原型交互演示文件</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">市场竞品分析完整报告</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">年度财务报表模板（Excel）</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">员工入职培训手册</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">客户服务话术标准文档</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">短视频脚本创作素材包</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">网站 SEO 优化执行清单</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">高清商用无版权图库合集</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">企业宣传片视频素材</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">字体设计素材包（可商用）</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">平面设计 PSD 分层源文件</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">音频背景音乐素材合集</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">项目管理甘特图模板</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">软件测试用例文档</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">接口文档 API 参考手册</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">云服务架构白皮书</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">网络安全应急预案</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">数据可视化大屏模板</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">小程序开发完整源码</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">电商运营活动策划案</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">社交媒体运营日历模板</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">品牌文案写作指南</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">用户调研问卷模板</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">竞品价格监测表格</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">内容审核标准与流程</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">直播运营执行手册</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">会员体系设计方案</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">客户关系管理表格</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">年度营销预算表</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">产品路标规划文档</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">竞品功能对比矩阵</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">团队协作流程规范</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">设计评审检查清单</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">版本发布操作手册</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">常见问题解答文档</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-      <li class="item"><span class="idx"></span><span class="title">数据备份与恢复方案</span><a class="btn" href="#" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg><span class="txt">下载</span></a></li>
-
-    </ul>
-  </div>
-
-  <p class="foot">— 共 44 条资源 —</p>
-
-</div>
-
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.download-btn');
+  if (btn) {
+    e.preventDefault();
+    showToast('下载链接为占位符，暂不可用');
+  }
+});
+</script>
 </body>
 </html>
