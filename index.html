@@ -9,8 +9,7 @@
   :root{
     --bg:#f1f5f9; --card:#fff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0;
     --primary:#4f46e5; --primary-2:#6366f1; --soft:#eef2ff;
-    --green:#15803d; --green-bg:#dcfce7; --red:#b91c1c; --red-bg:#fee2e2;
-    --amber:#f59e0b; --amber-bg:#fef3c7;
+    --green:#15803d; --red:#b91c1c; --red-bg:#fee2e2; --amber:#f59e0b; --amber-bg:#fef3c7;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
@@ -19,13 +18,11 @@
     color:var(--text); min-height:100vh;
   }
   .app{max-width:880px;margin:0 auto;padding:22px 16px 70px}
-
   header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
   h1{font-size:19px;margin:0;letter-spacing:.3px}
   .tabs{display:flex;background:#fff;border-radius:12px;padding:4px;box-shadow:0 1px 3px rgba(15,23,42,.08)}
   .tab{border:0;background:transparent;padding:8px 16px;border-radius:9px;font-size:14px;cursor:pointer;color:var(--muted);font-weight:600;font-family:inherit}
   .tab.active{background:var(--primary);color:#fff}
-
   .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 1px 3px rgba(15,23,42,.08);margin-bottom:16px}
   .card h2{font-size:15px;margin:0 0 14px;color:#334155}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -65,7 +62,12 @@
   .btn-play{border:0;background:linear-gradient(135deg,var(--primary-2),var(--primary));color:#fff;font-size:16px;padding:15px 34px;border-radius:15px;cursor:pointer;font-weight:700;font-family:inherit;box-shadow:0 10px 24px -8px rgba(79,70,229,.8);transition:.15s}
   .btn-play:active{transform:translateY(2px)}
 
-  .meaning{font-size:20px;font-weight:600;margin:20px 0 12px;min-height:28px;color:#0f172a;word-break:break-word}
+  .meaning{font-size:20px;font-weight:600;margin:20px 0 4px;min-height:28px;color:#0f172a;word-break:break-word}
+  .phonetic{
+    font-family:"Lucida Sans Unicode","Arial Unicode MS","Segoe UI Symbol",sans-serif;
+    color:#94a3b8;font-size:15px;min-height:20px;margin:4px 0 8px;word-break:break-word;
+  }
+  .phonetic:empty{display:none}
   .hint{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--primary-2);letter-spacing:3px;font-size:16px;min-height:22px;margin-bottom:10px;word-break:break-all}
   .answer{width:100%;border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-size:18px;font-family:inherit;resize:none;outline:none;transition:.15s;line-height:1.45;overflow:hidden;min-height:56px;color:var(--text)}
   .answer:focus{border-color:var(--primary-2);box-shadow:0 0 0 4px rgba(99,102,241,.13)}
@@ -77,7 +79,12 @@
   .feedback b{font-size:17px}
   .actions{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
 
-  .learn-word{font-size:34px;font-weight:800;margin:24px 0 12px;line-height:1.3;word-break:break-word}
+  .learn-word{font-size:34px;font-weight:800;margin:24px 0 4px;line-height:1.3;word-break:break-word}
+  .learn-phonetic{
+    font-family:"Lucida Sans Unicode","Arial Unicode MS","Segoe UI Symbol",sans-serif;
+    color:#94a3b8;font-size:17px;min-height:24px;margin-bottom:10px;word-break:break-word;
+  }
+  .learn-phonetic:empty{display:none}
   .learn-mean{font-size:17px;color:#475569;min-height:26px;margin-bottom:6px;word-break:break-word}
   .learn-hint{font-size:12px;color:#94a3b8;margin-bottom:4px}
 
@@ -107,6 +114,10 @@
   .item-main{flex:1;min-width:0}
   .item-text{font-size:16px;font-weight:600;word-break:break-word;line-height:1.4}
   .item-mean{font-size:13px;color:var(--muted);margin-top:3px;word-break:break-word}
+  .phonetic-inline{
+    font-weight:400;color:#94a3b8;font-size:14px;margin-left:8px;word-break:break-word;
+    font-family:"Lucida Sans Unicode","Arial Unicode MS","Segoe UI Symbol",sans-serif;
+  }
   .tag{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:700;vertical-align:middle;margin-left:5px;white-space:nowrap}
   .tag-word{background:var(--soft);color:#4338ca}
   .tag-phrase{background:#ecfdf5;color:#047857}
@@ -143,9 +154,10 @@
   <!-- ================= 练习页 ================= -->
   <section id="panel-practice">
 
+    <!-- 默认学习模式 -->
     <div class="mode-switch" id="modeSwitch">
-      <button data-mode="spell" class="active">✍️ 拼写模式</button>
-      <button data-mode="learn">📖 学习模式</button>
+      <button data-mode="learn" class="active">📖 学习模式</button>
+      <button data-mode="spell">✍️ 拼写模式</button>
     </div>
 
     <div class="chips" id="typeChips">
@@ -163,12 +175,12 @@
       </div>
       <div class="progress"><i id="progFill"></i></div>
 
-      <!-- 拼写模式 -->
-      <div id="spellView">
+      <div id="spellView" class="hidden">
         <div class="play-row">
           <button class="btn-play" id="btnPlay">🔊 播放发音</button>
         </div>
         <div class="meaning" id="qMeaning">—</div>
+        <div class="phonetic" id="qPhonetic"></div>
         <div class="hint" id="qHint"></div>
         <textarea id="answerInput" class="answer" rows="1" autocomplete="off"
           autocorrect="off" autocapitalize="off" spellcheck="false"
@@ -181,9 +193,9 @@
         </div>
       </div>
 
-      <!-- 学习模式 -->
-      <div id="learnView" class="hidden">
+      <div id="learnView">
         <div class="learn-word" id="lWord">—</div>
+        <div class="learn-phonetic" id="lPhonetic"></div>
         <div class="learn-mean" id="lMeaning">—</div>
         <div class="learn-hint">空格键可重播发音</div>
         <div class="actions">
@@ -212,12 +224,13 @@
         <label>口音</label>
         <select class="select" id="setLang">
           <option value="en-US">美式 en-US</option>
-          <option value="en-GB">英式 en-GB</option>
+          <option value="en-GB" selected>英式 en-GB（默认）</option>
           <option value="en-AU">澳式 en-AU</option>
         </select>
       </div>
       <div class="setting-row"><label><input type="checkbox" id="setAuto" checked> 自动播放发音</label></div>
       <div class="setting-row"><label><input type="checkbox" id="setMeaning" checked> 拼写模式显示中文提示</label></div>
+      <div class="setting-row"><label><input type="checkbox" id="setShowPhoneticSpell" checked> 拼写模式显示音标（仅单词）</label></div>
       <div class="setting-row"><label><input type="checkbox" id="setWrongFirst" checked> 错题 / 收藏优先出现</label></div>
       <div class="setting-row"><label><input type="checkbox" id="setAutoStar" checked> 答错 2 次自动标记「不熟」</label></div>
     </details>
@@ -235,10 +248,10 @@
           <option value="sentence">句子</option>
           <option value="auto">🤖 自动识别</option>
         </select>
-        <span class="muted">每行一条，格式 <code>英文 | 中文</code>（中文可省略）</span>
+        <span class="muted" id="bulkHint">单词支持：每3行一组（英文/音标/中文）或单行“英文|音标|中文”</span>
       </div>
-      <textarea class="bulk" id="bulkInput" rows="6"
-        placeholder="apple|苹果&#10;take off|起飞；脱下&#10;How are you?|你好吗？"></textarea>
+      <textarea class="bulk" id="bulkInput" rows="12"
+        placeholder="hello&#10;/həˈləʊ/&#10;你好&#10;&#10;hi&#10;/haɪ/&#10;你好"></textarea>
       <div class="row">
         <button class="btn primary" id="btnAdd">＋ 添加</button>
         <button class="btn ghost" id="btnImportTxt">📄 导入 TXT</button>
@@ -246,7 +259,8 @@
         <input type="file" id="txtInput" accept=".txt,text/plain" hidden>
       </div>
       <p class="muted small" style="margin:12px 0 0">
-        分隔符支持 <code>|</code> <code>｜</code> <code>Tab</code>；没有分隔符时自动在第一个中文字符处切开（如 <code>apple 苹果</code>）。
+        <strong>单词</strong>：每 3 行一组「英文 / 音标 / 中文」，或单行 <code>英文|音标|中文</code>；音标可留空。<br>
+        <strong>短语 / 句子</strong>：每行一条 <code>英文|中文</code>，或 <code>英文 中文</code>（自动切分）。<br>
         TXT 文件支持 UTF-8 / GBK 编码。
       </p>
     </div>
@@ -278,7 +292,8 @@
         <input type="file" id="fileInput" accept=".json,application/json" hidden>
       </div>
       <p class="muted small" style="margin:14px 0 0">
-        数据保存在本浏览器的 localStorage 里，清除浏览器数据或换设备会丢失，建议定期导出备份。
+        数据保存在本浏览器的 localStorage 里，清除浏览器数据或换设备会丢失，建议定期导出备份。<br>
+        单词以「英文 / 音标 / 中文」3 行一组导出，短语和句子以「英文|中文」单行导出。
       </p>
     </div>
   </section>
@@ -300,7 +315,7 @@ function toast(msg){
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
 }
 
 function shuffle(a){
@@ -311,7 +326,6 @@ function shuffle(a){
   return a;
 }
 
-/* 判分归一化：忽略大小写、标点、多余空格、连字符差异 */
 function norm(s){
   return String(s).toLowerCase()
     .replace(/[’‘`´]/g, "'")
@@ -321,23 +335,53 @@ function norm(s){
     .trim();
 }
 
+/* ==================== 音标 / 中文识别 ==================== */
+const IPA_RE = /[ˈˌəɪʊɛæɑɔʌɜɚɝθðʃʒŋɡɾʔːˑʰʲˠˤɒ]/;
+const CN_RE = /[\u4e00-\u9fa5]/;
+
+function containsChinese(s){ return CN_RE.test(s); }
+
+function looksLikePhonetic(s){
+  s = String(s).trim();
+  if(!s) return false;
+  if(/^\/.+\/$/.test(s)) return true;
+  if(/^\[.+\]$/.test(s)) return true;
+  if(IPA_RE.test(s)) return true;
+  return false;
+}
+
 /* ==================== 数据层 ==================== */
-const LS_KEY = 'wordSpellApp.v5';
+const LS_KEY = 'wordSpellApp.v7';
+const DEFAULT_INJECTED_KEY = 'wordSpellDefaultInjected.v1';
+const LANG_MIGRATED_KEY = 'wordSpellDefaultLangMigrated.v1';
 const TYPE_NAME = { word:'单词', phrase:'短语', sentence:'句子' };
+
 const defaultSettings = {
-  rate: 0.9, lang: 'en-US', autoPlay: true,
-  showMeaning: true, wrongFirst: true, autoStar: true
+  rate: 0.9, lang: 'en-GB', autoPlay: true,
+  showMeaning: true, showPhoneticSpell: true,
+  wrongFirst: true, autoStar: true
 };
+
+/* 默认数据：仅单词，带英式音标 */
+const DEFAULT_RAW_DATA = `hello|/həˈləʊ/|你好 你的 你好
+hi|/haɪ/|你好
+word|/wɜːd/|世界
+teacher|/ˈtiːtʃə(r)/|老师
+my|/maɪ/|我的
+you|/juː/|你
+are|/ɑː(r)/|是`;
 
 let db = { items: [], settings: { ...defaultSettings } };
 
 function normalizeItem(i){
   if(!i || !i.text) return null;
+  const type = TYPE_NAME[i.type] ? i.type : 'word';
   return {
     id: i.id || uid(),
     text: String(i.text),
     meaning: i.meaning ? String(i.meaning) : '',
-    type: TYPE_NAME[i.type] ? i.type : 'word',
+    phonetic: type === 'word' && i.phonetic ? String(i.phonetic).trim() : '',
+    type,
     star: !!i.star,
     right: Number(i.right) || 0,
     wrong: Number(i.wrong) || 0,
@@ -348,6 +392,8 @@ function normalizeItem(i){
 function loadDB(){
   try{
     const raw = localStorage.getItem(LS_KEY)
+      || localStorage.getItem('wordSpellApp.v6')
+      || localStorage.getItem('wordSpellApp.v5')
       || localStorage.getItem('wordSpellApp.v4')
       || localStorage.getItem('wordSpellApp.v3')
       || localStorage.getItem('wordSpellApp.v2')
@@ -362,14 +408,54 @@ function loadDB(){
 function saveDB(){
   try{
     const clean = db.items.map(i => ({
-      id: i.id, text: i.text, meaning: i.meaning, type: i.type, star: i.star,
-      right: i.right, wrong: i.wrong, createdAt: i.createdAt
+      id: i.id, text: i.text, meaning: i.meaning, phonetic: i.phonetic || '',
+      type: i.type, star: i.star, right: i.right, wrong: i.wrong, createdAt: i.createdAt
     }));
     localStorage.setItem(LS_KEY, JSON.stringify({ items: clean, settings: db.settings }));
   }catch(e){ toast('保存失败：' + e.message); }
 }
 
-/* ==================== 语音（浏览器 Web Speech API） ==================== */
+function migrateDefaultLang(){
+  if(localStorage.getItem(LANG_MIGRATED_KEY) === '1') return false;
+  if(db.settings.lang === 'en-US'){
+    db.settings.lang = 'en-GB';
+    saveDB();
+    localStorage.setItem(LANG_MIGRATED_KEY, '1');
+    return true;
+  }
+  localStorage.setItem(LANG_MIGRATED_KEY, '1');
+  return false;
+}
+
+function injectDefaultItemsIfNeeded(){
+  if(localStorage.getItem(DEFAULT_INJECTED_KEY) === '1') return false;
+  if(db.items.length > 0){
+    localStorage.setItem(DEFAULT_INJECTED_KEY, '1');
+    return false;
+  }
+
+  let offset = 0;
+  for(const line of DEFAULT_RAW_DATA.split('\n')){
+    const p = parseLine(line);
+    if(!p || !p.text) continue;
+    db.items.push({
+      id: uid(),
+      text: p.text,
+      meaning: p.meaning || '',
+      phonetic: p.phonetic || '',
+      type: 'word',
+      star: false,
+      right: 0,
+      wrong: 0,
+      createdAt: Date.now() + (offset++)
+    });
+  }
+  localStorage.setItem(DEFAULT_INJECTED_KEY, '1');
+  if(db.items.length) saveDB();
+  return db.items.length > 0;
+}
+
+/* ==================== 语音 ==================== */
 let voices = [];
 function refreshVoices(){
   voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
@@ -401,7 +487,7 @@ document.addEventListener('pointerdown', () => { userInteracted = true; }, { onc
 
 /* ==================== 练习状态 ==================== */
 const quiz = {
-  filter: 'all', mode: 'spell',
+  filter: 'all', mode: 'learn',
   pool: [], current: null, answered: false, hintLevel: 0,
   roundDone: 0, roundTotal: 0, sessionDone: 0, sessionRight: 0
 };
@@ -465,7 +551,6 @@ function renderQuestion(){
   else renderLearn(q);
 }
 
-/* ---------- 拼写模式 ---------- */
 function renderSpell(q){
   $('#spellView').classList.remove('hidden');
   $('#learnView').classList.add('hidden');
@@ -476,6 +561,14 @@ function renderSpell(q){
   $('#qMeaning').textContent = db.settings.showMeaning
     ? (q.meaning || '—')
     : '（中文提示已关闭）';
+
+  const phEl = $('#qPhonetic');
+  if(q.type === 'word' && db.settings.showPhoneticSpell && q.phonetic){
+    phEl.textContent = q.phonetic;
+  }else{
+    phEl.textContent = '';
+  }
+
   $('#qHint').textContent = '';
 
   const inp = $('#answerInput');
@@ -495,12 +588,12 @@ function renderSpell(q){
   setTimeout(() => inp.focus(), 30);
 }
 
-/* ---------- 学习模式 ---------- */
 function renderLearn(q){
   $('#spellView').classList.add('hidden');
   $('#learnView').classList.remove('hidden');
 
   $('#lWord').textContent = q.text;
+  $('#lPhonetic').textContent = q.type === 'word' ? (q.phonetic || '') : '';
   $('#lMeaning').textContent = q.meaning || '（未填写中文意思）';
   updateLearnStar(q);
 
@@ -512,7 +605,6 @@ function updateLearnStar(q){
   b.textContent = q.star ? '★ 已标记不熟' : '☆ 标记不熟';
 }
 
-/* ---------- 检查答案 ---------- */
 function checkAnswer(){
   const q = quiz.current;
   if(!q) return;
@@ -614,7 +706,7 @@ function updateStats(){
   bar.innerHTML = `本次练习：${quiz.sessionDone} 题，答对 ${quiz.sessionRight} 题，正确率 <b>${rate}%</b>`;
 }
 
-/* ==================== 解析与添加 ==================== */
+/* ==================== 解析 ==================== */
 function detectType(text){
   const t = String(text).trim();
   if(!t) return 'word';
@@ -624,46 +716,101 @@ function detectType(text){
   return 'phrase';
 }
 
+/* 单行解析：英文|音标|中文 / 英文|中文 / 英文中文 */
 function parseLine(line){
   const t = String(line).trim();
   if(!t) return null;
 
-  let text = t, meaning = '';
-  const m = t.match(/^(.*?)\s*[|｜\t]\s*(.*)$/);
-  if(m){
-    text = m[1].trim();
-    let rest = m[2].trim();
-    // 兼容旧格式「英文|中文|音标」，仅取中文部分
-    const m2 = rest.match(/^(.*?)\s*[|｜]\s*(.*)$/);
-    if(m2) rest = m2[1].trim();
-    meaning = rest;
-  }else{
-    const idx = t.search(/[\u4e00-\u9fa5]/);
-    if(idx > 0){
-      text = t.slice(0, idx).trim();
-      meaning = t.slice(idx).trim();
+  const parts = t.split(/\s*[|｜\t]\s*/).filter(p => p.length > 0);
+
+  if(parts.length >= 3){
+    const p1 = parts[0].trim();
+    const p2 = parts[1].trim();
+    const p3 = parts.slice(2).join(' ').trim();
+    if(looksLikePhonetic(p2) || !containsChinese(p2)){
+      return { text: p1, phonetic: p2, meaning: p3 };
+    }else{
+      return { text: p1, phonetic: p3, meaning: p2 };
     }
   }
-  if(!text) return null;
-  return { text, meaning };
+  if(parts.length === 2){
+    return { text: parts[0].trim(), phonetic: '', meaning: parts[1].trim() };
+  }
+
+  const idx = t.search(CN_RE);
+  if(idx > 0){
+    return { text: t.slice(0, idx).trim(), phonetic: '', meaning: t.slice(idx).trim() };
+  }
+  return { text: t, phonetic: '', meaning: '' };
 }
 
+/* 多行智能解析（仅用于单词 / 自动识别） */
+function parseSmart(raw){
+  const lines = String(raw).split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+  const items = [];
+  let cur = { text: '', phonetic: '', meaning: '' };
+
+  const flush = () => {
+    if(cur.text) items.push({ text: cur.text, phonetic: cur.phonetic, meaning: cur.meaning });
+    cur = { text: '', phonetic: '', meaning: '' };
+  };
+
+  for(const line of lines){
+    if(/[|｜\t]/.test(line)){
+      flush();
+      const p = parseLine(line);
+      if(p && p.text) items.push(p);
+      continue;
+    }
+    if(looksLikePhonetic(line)){
+      if(cur.phonetic) flush();
+      cur.phonetic = line;
+      continue;
+    }
+    if(containsChinese(line)){
+      if(cur.meaning) cur.meaning += ' ' + line;
+      else cur.meaning = line;
+      continue;
+    }
+    if(cur.text) flush();
+    cur.text = line;
+  }
+  flush();
+  return items;
+}
+
+/* ==================== 添加 ==================== */
 function addItemsFromText(raw, typeOpt){
   const auto = typeOpt === 'auto';
+  const isWord = typeOpt === 'word';
+
+  let parsed;
+  if (auto || isWord) {
+    parsed = parseSmart(raw);
+  } else {
+    // 短语 / 句子：每行一条
+    parsed = String(raw).split(/\r?\n/)
+      .map(line => parseLine(line))
+      .filter(p => p && p.text);
+  }
+
   const exist = new Set(db.items.map(i => i.text.toLowerCase()));
   const addedItems = [];
   let skipped = 0, offset = 0;
 
-  for(const line of String(raw).split(/\r?\n/)){
-    const p = parseLine(line);
-    if(!p) continue;
+  for(const p of parsed){
+    if(!p.text) continue;
     if(exist.has(p.text.toLowerCase())){ skipped++; continue; }
     exist.add(p.text.toLowerCase());
+
+    const finalType = auto ? detectType(p.text) : typeOpt;
     const it = {
       id: uid(),
       text: p.text,
-      meaning: p.meaning,
-      type: auto ? detectType(p.text) : typeOpt,
+      meaning: p.meaning || '',
+      // 仅单词保留音标
+      phonetic: finalType === 'word' ? (p.phonetic || '') : '',
+      type: finalType,
       star: false,
       right: 0,
       wrong: 0,
@@ -695,8 +842,10 @@ function renderLib(){
   const cnt = { word:0, phrase:0, sentence:0 };
   db.items.forEach(i => cnt[i.type]++);
   const starCount = db.items.filter(i => i.star).length;
+  const noPh = db.items.filter(i => i.type === 'word' && !i.phonetic).length;
   $('#libSummary').textContent =
     `共 ${total} 条 · 单词 ${cnt.word} · 短语 ${cnt.phrase} · 句子 ${cnt.sentence} · ⭐ ${starCount}` +
+    (noPh ? ` · 单词缺音标 ${noPh}` : '') +
     (kw || ft !== 'all' ? `　（当前筛选 ${list.length} 条）` : '');
 
   const box = $('#libList');
@@ -710,12 +859,15 @@ function renderLib(){
   }
   empty.classList.add('hidden');
 
-  box.innerHTML = list.map(i => `
+  box.innerHTML = list.map(i => {
+    const phHtml = (i.type === 'word' && i.phonetic)
+      ? `<span class="phonetic-inline">${esc(i.phonetic)}</span>` : '';
+    return `
     <div class="item" data-id="${i.id}">
       <button class="icon-btn star-btn ${i.star ? 'on' : ''}" data-act="star"
         title="${i.star ? '取消标记不熟' : '标记为不熟'}">${i.star ? '★' : '☆'}</button>
       <div class="item-main">
-        <div class="item-text">${esc(i.text)}<span class="tag tag-${i.type}">${TYPE_NAME[i.type]}</span></div>
+        <div class="item-text">${esc(i.text)}${phHtml}<span class="tag tag-${i.type}">${TYPE_NAME[i.type]}</span></div>
         ${i.meaning ? `<div class="item-mean">${esc(i.meaning)}</div>` : ''}
       </div>
       <div class="item-stats" title="答对 / 答错">
@@ -724,8 +876,8 @@ function renderLib(){
       <button class="icon-btn" data-act="play" title="朗读">🔊</button>
       <button class="icon-btn" data-act="edit" title="编辑">✎</button>
       <button class="icon-btn" data-act="del" title="删除">🗑</button>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 /* ==================== 事件绑定 ==================== */
@@ -804,6 +956,11 @@ $('#setMeaning').addEventListener('change', e => {
   saveDB();
   if(quiz.current && quiz.mode === 'spell' && !quiz.answered) renderSpell(quiz.current);
 });
+$('#setShowPhoneticSpell').addEventListener('change', e => {
+  db.settings.showPhoneticSpell = e.target.checked;
+  saveDB();
+  if(quiz.current && quiz.mode === 'spell' && !quiz.answered) renderSpell(quiz.current);
+});
 $('#setWrongFirst').addEventListener('change', e => { db.settings.wrongFirst = e.target.checked; saveDB(); quiz.pool = []; });
 $('#setAutoStar').addEventListener('change', e => { db.settings.autoStar = e.target.checked; saveDB(); });
 
@@ -813,9 +970,27 @@ function syncSettingsUI(){
   $('#setLang').value = db.settings.lang;
   $('#setAuto').checked = db.settings.autoPlay;
   $('#setMeaning').checked = db.settings.showMeaning;
+  $('#setShowPhoneticSpell').checked = db.settings.showPhoneticSpell;
   $('#setWrongFirst').checked = db.settings.wrongFirst;
   $('#setAutoStar').checked = db.settings.autoStar;
 }
+
+/* 更新批量添加提示 */
+function updateBulkHint(){
+  const type = $('#addType').value;
+  const hint = $('#bulkHint');
+  if(type === 'word'){
+    hint.textContent = '单词支持：每3行一组（英文/音标/中文）或单行“英文|音标|中文”';
+    $('#bulkInput').placeholder = 'hello\n/həˈləʊ/\n你好\n\nhi\n/haɪ/\n你好';
+  }else if(type === 'auto'){
+    hint.textContent = '自动识别：可使用3行格式，系统会按内容自动判断类型并保留单词音标';
+    $('#bulkInput').placeholder = 'hello\n/həˈləʊ/\n你好\n\ntake off\n起飞\n\nPractice makes perfect.\n熟能生巧。';
+  }else{
+    hint.textContent = '每行一条：“英文|中文” 或 “英文 中文”';
+    $('#bulkInput').placeholder = 'take off|起飞；脱下\nlook forward to|期待\nPractice makes perfect.|熟能生巧。';
+  }
+}
+$('#addType').addEventListener('change', updateBulkHint);
 
 /* 批量添加 */
 $('#btnAdd').addEventListener('click', () => {
@@ -850,13 +1025,37 @@ $('#txtInput').addEventListener('change', async e => {
 /* 示例 */
 $('#btnExample').addEventListener('click', () => {
   const type = $('#addType').value;
-  const samples = {
-    word: 'apple|苹果\nbanana|香蕉\ndelicious|美味的\numbrella|雨伞\nschedule|日程；安排',
-    phrase: 'take off|起飞；脱下\nlook forward to|期待\nas soon as possible|尽快\nin charge of|负责',
-    sentence: 'How are you doing today?|你今天怎么样？\nI would like a cup of coffee.|我想要一杯咖啡。\nPractice makes perfect.|熟能生巧。',
-    auto: 'apple|苹果\ntake off|起飞\nPractice makes perfect.|熟能生巧。'
-  };
-  $('#bulkInput').value = samples[type] || samples.word;
+  let samples;
+  if(type === 'word'){
+    samples = `apple
+/ˈæpəl/
+苹果
+
+banana
+/bəˈnɑːnə/
+香蕉
+
+delicious
+/dɪˈlɪʃəs/
+美味的
+
+umbrella
+/ʌmˈbrelə/
+雨伞`;
+  }else if(type === 'phrase'){
+    samples = 'take off|起飞；脱下\nlook forward to|期待\nas soon as possible|尽快\nin charge of|负责';
+  }else if(type === 'sentence'){
+    samples = 'How are you doing today?|你今天怎么样？\nI would like a cup of coffee.|我想要一杯咖啡。\nPractice makes perfect.|熟能生巧。';
+  }else{
+    samples = `apple
+/ˈæpəl/
+苹果
+
+take off|起飞
+
+Practice makes perfect.|熟能生巧。`;
+  }
+  $('#bulkInput').value = samples;
 });
 
 /* 词库列表操作 */
@@ -879,13 +1078,19 @@ $('#libList').addEventListener('click', e => {
     if(quiz.current && quiz.current.id === item.id) renderQuestion();
   }
   else if(act === 'edit'){
-    const input = prompt('编辑（格式：英文 | 中文）',
-      item.meaning ? `${item.text}|${item.meaning}` : item.text);
+    let defaultVal;
+    if(item.type === 'word'){
+      defaultVal = [item.text, item.phonetic, item.meaning].join('|');
+    }else{
+      defaultVal = item.meaning ? `${item.text}|${item.meaning}` : item.text;
+    }
+    const input = prompt('编辑（格式：英文|音标|中文，后两项可留空）', defaultVal);
     if(input === null) return;
     const p = parseLine(input);
-    if(!p){ toast('内容为空，已取消'); return; }
+    if(!p || !p.text){ toast('内容为空，已取消'); return; }
     item.text = p.text;
-    item.meaning = p.meaning;
+    item.phonetic = item.type === 'word' ? (p.phonetic || '') : '';
+    item.meaning = p.meaning || '';
     saveDB();
     renderLib();
     toast('已保存');
@@ -903,7 +1108,6 @@ $('#libList').addEventListener('click', e => {
   }
 });
 
-/* 搜索 / 筛选 */
 $('#searchInput').addEventListener('input', renderLib);
 $('#filterType').addEventListener('change', renderLib);
 
@@ -911,7 +1115,7 @@ $('#filterType').addEventListener('change', renderLib);
 $('#btnExport').addEventListener('click', () => {
   if(!db.items.length){ toast('词库是空的'); return; }
   const data = {
-    version: 5,
+    version: 7,
     exportedAt: new Date().toISOString(),
     items: db.items,
     settings: db.settings
@@ -922,15 +1126,20 @@ $('#btnExport').addEventListener('click', () => {
   );
 });
 
-/* 导出 TXT */
+/* 导出 TXT：单词3行一组，短语/句子单行 */
 $('#btnExportTxt').addEventListener('click', () => {
   if(!db.items.length){ toast('词库是空的'); return; }
-  const lines = db.items.map(i => {
-    const tag = i.star ? ' [★]' : '';
-    return `${i.text}${i.meaning ? '|' + i.meaning : ''}${tag}`;
+  const groups = db.items.map(i => {
+    if(i.type === 'word'){
+      const lines = [i.text, i.phonetic || '', i.meaning || ''];
+      while(lines.length > 1 && !lines[lines.length - 1]) lines.pop();
+      return lines.join('\n');
+    }else{
+      return `${i.text}${i.meaning ? '|' + i.meaning : ''}`;
+    }
   });
   download(
-    new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }),
+    new Blob([groups.join('\n\n')], { type: 'text/plain;charset=utf-8' }),
     `词库-${new Date().toISOString().slice(0, 10)}.txt`
   );
 });
@@ -1005,7 +1214,7 @@ $('#btnClearAll').addEventListener('click', () => {
   nextQuestion();
 });
 
-/* 空格键重播（不在输入框内时） */
+/* 空格键重播 */
 document.addEventListener('keydown', e => {
   const practiceOpen = !$('#panel-practice').classList.contains('hidden');
   if(!practiceOpen || !quiz.current) return;
@@ -1019,9 +1228,14 @@ document.addEventListener('keydown', e => {
 
 /* ==================== 启动 ==================== */
 loadDB();
+const langMigrated = migrateDefaultLang();
+const injected = injectDefaultItemsIfNeeded();
 syncSettingsUI();
+updateBulkHint();
 renderLib();
 nextQuestion();
+if(injected) toast(`已加载 ${db.items.length} 个默认单词`);
+else if(langMigrated) toast('发音口音已切换为英式 en-GB');
 </script>
 </body>
 </html>
