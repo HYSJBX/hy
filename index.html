@@ -95,8 +95,18 @@
   }
   .tip-title{font-size:20px;font-weight:700;color:#FFE4EC;margin:0 0 6px}
   .tip-sub{font-size:14px;color:rgba(255,255,255,.5);margin:0 0 20px}
-  .qr-wrap{background:#fff;border-radius:16px;padding:12px;display:inline-block;margin-bottom:14px}
-  .qr-wrap canvas{display:block;width:180px;height:180px}
+  
+  /* 修改了二维码容器的样式以适配真实图片 */
+  .qr-wrap{
+    background:#fff;border-radius:16px;padding:10px;
+    display:inline-block;margin-bottom:14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .qr-wrap img{
+    display:block;width:180px;height:180px;
+    object-fit:cover;border-radius:8px;
+  }
+  
   .tip-note{font-size:13px;color:rgba(255,255,255,.45);margin:0 0 20px}
 
   @keyframes fadeUp{
@@ -127,24 +137,26 @@
 <div class="overlay" id="overlay">
   <div class="sheet">
     <img id="cardImg" alt="玫瑰相框">
-    <p class="hint" id="cardHint">长按图片即可保存</p>
+    <p class="hint" id="cardHint">长按上方图片可保存</p>
     <div class="row">
-      <button class="btn primary" id="saveBtn">保存 GIF</button>
-      <button class="btn ghost" id="shareBtn">分享</button>
+      <button class="btn primary" id="shareBtn">分享</button>
+      <button class="btn ghost" id="pngBtn">保存静图</button>
     </div>
     <div class="row" style="margin-top:12px">
-      <button class="btn ghost" id="pngBtn">保存静图</button>
       <button class="btn ghost" id="closeBtn">返回</button>
     </div>
   </div>
 </div>
 
-<!-- 赞赏 -->
+<!-- 赞赏（已更换为真实图片） -->
 <div class="overlay" id="tipOverlay">
   <div class="sheet tip-sheet">
     <div class="tip-title">喜欢这朵玫瑰吗？</div>
     <p class="tip-sub">请作者喝杯奶茶 ☕</p>
-    <div class="qr-wrap"><canvas id="qrCanvas"></canvas></div>
+    <div class="qr-wrap">
+      <!-- 这里的 src="qr.png" 请确保和 HTML 文件在同一目录，或者替换为您的在线图片链接 -->
+      <img id="qrImage" src="qr.png" alt="微信打赏二维码" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'180\'><rect width=\'180\' height=\'180\' fill=\'%23eee\'/><text x=\'90\' y=\'90\' font-size=\'14\' text-anchor=\'middle\' fill=\'%23999\'>请替换qr.png图片</text></svg>'">
+    </div>
     <p class="tip-note">微信扫一扫 · 金额随意</p>
     <button class="btn ghost" id="tipClose">关闭</button>
   </div>
@@ -160,7 +172,6 @@
   var R_HOLE = 195;
   var FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif';
 
-  // GIF 输出参数
   var GIF_W = 480, GIF_H = 640;
   var FRAMES = 10;
   var FRAME_DELAY = 110;
@@ -185,6 +196,12 @@
   var busy = false;
 
   var cardUrl = null, cardBlob = null, cardType = 'gif';
+  var stillBlob = null;
+
+  /* ================= 设备检测 ================= */
+  function isMobileDevice() {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }
 
   /* ================= 心形路径 ================= */
   function heartPath(c, size) {
@@ -454,6 +471,7 @@
       im.onload = function () {
         photoImg = im;
         renderSceneAt(ctx, (clock / ANIM_PERIOD) % 1);
+        stillBlob = null;
       };
       im.onerror = function () { alert('这张图片读不出来，换一张试试～'); };
       im.src = ev.target.result;
@@ -555,7 +573,6 @@
   var overlay = document.getElementById('overlay');
   var cardImg = document.getElementById('cardImg');
   var cardHint = document.getElementById('cardHint');
-  var saveBtn = document.getElementById('saveBtn');
 
   function showResult(blob, type) {
     if (cardUrl) URL.revokeObjectURL(cardUrl);
@@ -563,11 +580,9 @@
     cardType = type;
     cardUrl = URL.createObjectURL(blob);
     cardImg.src = cardUrl;
-    cardHint.textContent = type === 'gif'
-      ? '长按图片保存 GIF · 点下方按钮也行'
-      : '长按图片保存 · 点下方按钮也行';
-    saveBtn.textContent = type === 'gif' ? '保存 GIF' : '保存图片';
+    cardHint.textContent = '长按上方图片可保存 · 或点下方按钮';
     overlay.classList.add('show');
+    prepareStillBlob();
   }
 
   function closeOverlay() {
@@ -588,7 +603,23 @@
 
   function saveCard() {
     if (!cardBlob) return;
-    downloadBlob(cardBlob, cardType === 'gif' ? '心之所向-玫瑰.gif' : '心之所向-玫瑰.png');
+    var filename = cardType === 'gif' ? '心之所向-玫瑰.gif' : '心之所向-玫瑰.png';
+
+    if (!isMobileDevice()) {
+      downloadBlob(cardBlob, filename);
+      return;
+    }
+
+    var blobUrl = URL.createObjectURL(cardBlob);
+    var newTab = window.open(blobUrl, '_blank');
+
+    if (!newTab) {
+      alert('浏览器阻止了新标签页。请允许弹出窗口后重试，或长按上方图片手动保存。');
+      URL.revokeObjectURL(blobUrl);
+      return;
+    }
+
+    setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 10000);
   }
 
   function shareCard() {
@@ -612,7 +643,40 @@
     }
   }
 
+  function prepareStillBlob() {
+    renderSceneAt(offCtx, 0);
+    offCanvas.toBlob(function (blob) { stillBlob = blob; }, 'image/png');
+  }
+
   function saveStill() {
+    if (isMobileDevice()) {
+      renderSceneAt(offCtx, 0);
+      var url = offCanvas.toDataURL('image/png');
+      var newTab = window.open('', '_blank');
+      if (newTab) {
+        newTab.document.write(
+          '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+          '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+          '<title>长按保存图片</title></head>' +
+          '<body style="margin:0;background:#0B0206;display:flex;flex-direction:column;' +
+          'align-items:center;justify-content:center;min-height:100vh;padding:16px;' +
+          'font-family:sans-serif;">' +
+          '<img src="' + url + '" style="max-width:100%;border-radius:14px;' +
+          'box-shadow:0 20px 50px rgba(0,0,0,.6);" />' +
+          '<p style="color:rgba(255,255,255,.65);font-size:14px;margin-top:18px;">' +
+          '长按上方图片 → 保存到相册</p></body></html>'
+        );
+        newTab.document.close();
+      } else {
+        alert('请允许弹出窗口，或长按上方图片手动保存。');
+      }
+      return;
+    }
+
+    if (stillBlob) {
+      downloadBlob(stillBlob, '心之所向-玫瑰静图.png');
+      return;
+    }
     renderSceneAt(offCtx, 0);
     offCanvas.toBlob(function (blob) {
       downloadBlob(blob, '心之所向-玫瑰静图.png');
@@ -642,7 +706,7 @@
         }, 'image/png');
       }).then(function (blob) {
         showResult(blob, 'png');
-        cardHint.textContent = '动图生成失败，已为你保存静图';
+        cardHint.textContent = '动图生成失败，已为你生成静图';
       });
     }).then(function () {
       busy = false;
@@ -652,63 +716,10 @@
     });
   }
 
-  /* ================= 赞赏二维码（视觉占位） ================= */
-  function drawFakeQR(canvas) {
-    var size = 260;
-    canvas.width = size;
-    canvas.height = size;
-    var c = canvas.getContext('2d');
-
-    c.fillStyle = '#ffffff';
-    c.fillRect(0, 0, size, size);
-
-    var n = 25;
-    var cell = size / n;
-    var seed = 885522;
-    function rnd() {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    }
-
-    function inFinder(x, y) {
-      if (x < 7 && y < 7) return true;
-      if (x >= n - 7 && y < 7) return true;
-      if (x < 7 && y >= n - 7) return true;
-      return false;
-    }
-
-    function drawFinder(ox, oy) {
-      c.fillStyle = '#1a1a1a';
-      c.fillRect(ox * cell, oy * cell, 7 * cell, 7 * cell);
-      c.fillStyle = '#ffffff';
-      c.fillRect((ox + 1) * cell, (oy + 1) * cell, 5 * cell, 5 * cell);
-      c.fillStyle = '#1a1a1a';
-      c.fillRect((ox + 2) * cell, (oy + 2) * cell, 3 * cell, 3 * cell);
-    }
-
-    c.fillStyle = '#1a1a1a';
-    for (var y = 0; y < n; y++) {
-      for (var x = 0; x < n; x++) {
-        if (inFinder(x, y)) continue;
-        if (rnd() > 0.53) {
-          c.fillRect(x * cell, y * cell, Math.ceil(cell), Math.ceil(cell));
-        }
-      }
-    }
-
-    drawFinder(0, 0);
-    drawFinder(n - 7, 0);
-    drawFinder(0, n - 7);
-  }
-
-  var qrDrawn = false;
+  /* ================= 赞赏弹层 ================= */
   var tipOverlay = document.getElementById('tipOverlay');
 
   function openTip() {
-    if (!qrDrawn) {
-      drawFakeQR(document.getElementById('qrCanvas'));
-      qrDrawn = true;
-    }
     tipOverlay.classList.add('show');
   }
 
@@ -716,14 +727,12 @@
   var msgInput = document.getElementById('msgInput');
   msgInput.addEventListener('input', function () {
     message = msgInput.value.trim();
+    stillBlob = null;
     renderSceneAt(ctx, (clock / ANIM_PERIOD) % 1);
   });
 
-  // 打赏按钮（原“添加照片”位置）
   document.getElementById('tipBtn').addEventListener('click', openTip);
-
   genBtn.addEventListener('click', generate);
-  saveBtn.addEventListener('click', saveCard);
   document.getElementById('shareBtn').addEventListener('click', shareCard);
   document.getElementById('pngBtn').addEventListener('click', saveStill);
   document.getElementById('closeBtn').addEventListener('click', closeOverlay);
@@ -732,7 +741,6 @@
     if (e.target === overlay) closeOverlay();
   });
 
-  // 点击画面中央上传照片
   stage.addEventListener('click', function (e) {
     var rect = stage.getBoundingClientRect();
     var x = (e.clientX - rect.left) / rect.width * W;
@@ -741,7 +749,6 @@
     if (d < R_HOLE + 60) openPicker();
   });
 
-  // 赞赏关闭
   document.getElementById('tipClose').addEventListener('click', function () {
     tipOverlay.classList.remove('show');
   });
